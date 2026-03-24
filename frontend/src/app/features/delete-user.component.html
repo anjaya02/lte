@@ -36,48 +36,47 @@
       </div>
     </div>
   </div>
+</div>
 
+<div
+  *ngIf="confirmModal.show"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  "
+>
   <div
-    *ngIf="confirmModal.show"
     style="
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     "
   >
-    <div
-      style="
-        background: var(--bg-panel);
-        border: 1px solid var(--glass-border);
-        border-radius: 16px;
-        padding: 2rem;
-        max-width: 400px;
-        width: 90%;
-        backdrop-filter: blur(20px);
-      "
-    >
-      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem">
-        <lucide-icon [img]="AlertTriangleIcon" [size]="24" color="#ef4444"></lucide-icon>
-        <h3 style="margin: 0; font-size: 1.1rem">Confirm Delete</h3>
-      </div>
-      <p style="color: var(--text-muted); margin-bottom: 1.5rem">
-        Are you sure you want to execute {{ confirmModal.operation }}? This action cannot be undone.
-      </p>
-      <div style="display: flex; gap: 1rem; justify-content: flex-end">
-        <button class="btn btn-secondary" (click)="confirmModal.show = false">
-          <lucide-icon [img]="XIcon" [size]="16"></lucide-icon> Cancel
-        </button>
-        <button class="btn btn-danger" (click)="handleConfirmDelete()">
-          <lucide-icon [img]="Trash2Icon" [size]="16"></lucide-icon> Delete
-        </button>
-      </div>
+    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem">
+      <lucide-icon [img]="AlertTriangleIcon" [size]="24" color="#ef4444"></lucide-icon>
+      <h3 style="margin: 0; font-size: 1.1rem; color: #1f2937">Confirm Delete</h3>
+    </div>
+    <p style="color: #6b7280; margin-bottom: 1.5rem">
+      Are you sure you want to execute {{ confirmModal.operation }}? This action cannot be undone.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: flex-end">
+      <button class="btn btn-secondary" (click)="confirmModal.show = false">
+        <lucide-icon [img]="XIcon" [size]="16"></lucide-icon> Cancel
+      </button>
+      <button class="btn btn-danger" (click)="handleConfirmDelete()">
+        <lucide-icon [img]="Trash2Icon" [size]="16"></lucide-icon> Delete
+      </button>
     </div>
   </div>
 </div>

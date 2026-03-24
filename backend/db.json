@@ -20,6 +20,13 @@
       "LTE_ISDN": "94553151510",
       "LTE_PROFILE": "200",
       "LTE_PKG": "189"
+    },
+    {
+      "LTE_SUB": "94771234567",
+      "LTE_IMSI": "413011223344556",
+      "LTE_ISDN": "",
+      "LTE_PROFILE": "",
+      "LTE_PKG": ""
     }
   ],
   "serviceOrders": [
@@ -36,6 +43,13 @@
       "VOICE_SO": "SI2026021917458469",
       "BB_SO": "SI2026021917458475",
       "AB_SO": "SI2026021917458481"
+    },
+    {
+      "LTE_SUB": "94771234567",
+      "CIRT_TYPE": "S",
+      "VOICE_SO": "SO_101",
+      "BB_SO": "SO_102",
+      "AB_SO": "SO_103"
     }
   ]
 }
