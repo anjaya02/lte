@@ -19,7 +19,7 @@ import { ToastService } from '../core/toast.service';
         (mouseleave)="toastService.resumeTimer(toast.id)"
       >
         <span class="toast-icon" aria-hidden="true">{{ toast.type === 'success' ? '✔' : '✘' }}</span>
-        <span>{{ toast.text }}</span>
+        <span class="toast-message">{{ toast.text }}</span>
         <button
           class="toast-close"
           (click)="toastService.dismiss(toast.id)"
