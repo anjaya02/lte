@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Database, Save } from 'lucide-angular';
@@ -37,6 +37,7 @@ export class AddUserComponent {
   constructor(
     private lteApiService: LteApiService,
     private toastService: ToastService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   handleGetDetails() {
@@ -64,6 +65,7 @@ export class AddUserComponent {
             }
             this.showDetails = true;
             this.userFound = true;
+            this.cdr.detectChanges();
             this.toastService.show('success', 'User details loaded successfully.');
           } else {
             this.toastService.show('error', data.message || 'User not found');

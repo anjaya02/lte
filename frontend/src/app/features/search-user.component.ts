@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search } from 'lucide-angular';
@@ -23,6 +23,7 @@ export class SearchUserComponent {
   constructor(
     private lteApiService: LteApiService,
     private toastService: ToastService,
+    private cdr: ChangeDetectorRef,
   ) {}
 
   handleSearchByImsi() {
@@ -31,6 +32,7 @@ export class SearchUserComponent {
       next: (data) => {
         if (data.result === 'success') {
           this.subResult = data.message;
+          this.cdr.detectChanges();
           this.toastService.show('success', 'Search completed successfully.');
         } else {
           this.subResult = '';
@@ -50,6 +52,7 @@ export class SearchUserComponent {
       next: (data) => {
         if (data.result === 'success') {
           this.imsiResult = data.message;
+          this.cdr.detectChanges();
           this.toastService.show('success', 'Search completed successfully.');
         } else {
           this.imsiResult = '';

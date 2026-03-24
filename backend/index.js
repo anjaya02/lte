@@ -113,7 +113,7 @@ app.post("/api/users/create", async (req, res) => {
       (u) => u.LTE_SUB === LTE_SUB || u.LTE_IMSI === LTE_IMSI,
     );
     if (existingUser) {
-      return res.json({ result: "failed", message: "CREATE_LTE_UDR_HSS" });
+      return res.json({ result: "failed", message: "User already exists with this LTE SUB or IMSI" });
     }
 
     // Create new user
@@ -151,7 +151,8 @@ app.post("/api/users/create", async (req, res) => {
       message: "LTE User Create Operation Completed",
     });
   } catch (e) {
-    res.status(500).json({ result: "failed", message: "CREATE_LTE_KI" });
+    console.error(e);
+    res.status(500).json({ result: "failed", message: "Failed to create user" });
   }
 });
 
@@ -166,7 +167,7 @@ app.post("/api/users/delete", async (req, res) => {
         (u) => u.LTE_SUB === LTE_SUB && u.LTE_IMSI === LTE_IMSI,
       );
       if (!userExists) {
-        return res.json({ result: "failed", message: "DELETE_LTE_UDR_HSS" });
+        return res.json({ result: "failed", message: "User not found with provided LTE SUB and IMSI" });
       }
       db.users = db.users.filter(
         (u) => !(u.LTE_SUB === LTE_SUB && u.LTE_IMSI === LTE_IMSI),
@@ -177,13 +178,13 @@ app.post("/api/users/delete", async (req, res) => {
     } else if (operation === "DEL_KI") {
       const userExists = db.users.find((u) => u.LTE_IMSI === LTE_IMSI);
       if (!userExists) {
-        return res.json({ result: "failed", message: "DELETE_LTE_KI" });
+        return res.json({ result: "failed", message: "User not found with provided LTE IMSI" });
       }
       db.users = db.users.filter((u) => u.LTE_IMSI !== LTE_IMSI);
     } else if (operation === "DEL_SUB") {
       const userExists = db.users.find((u) => u.LTE_SUB === LTE_SUB);
       if (!userExists) {
-        return res.json({ result: "failed", message: "DELETE_LTE_UDR_HSS" });
+        return res.json({ result: "failed", message: "User not found with provided LTE SUB" });
       }
       db.users = db.users.filter((u) => u.LTE_SUB !== LTE_SUB);
       db.serviceOrders = db.serviceOrders.filter(
