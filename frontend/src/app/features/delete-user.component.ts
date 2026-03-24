@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Trash2, X, AlertTriangle } from 'lucide-angular';
 import { LteApiService } from '../core/lte-api.service';
+import { ToastService } from '../core/toast.service';
 
 @Component({
   selector: 'app-delete-user',
@@ -17,7 +18,6 @@ export class DeleteUserComponent {
 
   sub = '';
   imsi = '';
-  status = { type: '', msg: '' };
 
   confirmModal = {
     show: false,
@@ -25,29 +25,29 @@ export class DeleteUserComponent {
     operation: '',
   };
 
-  constructor(private lteApiService: LteApiService) {}
+  constructor(
+    private lteApiService: LteApiService,
+    private toastService: ToastService,
+  ) {}
 
   handleDeleteClick(deleteType: string) {
     let operation = '';
 
     if (deleteType === 'SUB') {
       if (!this.sub) {
-        this.status = { type: 'error', msg: 'Please provide LTE SUB.' };
+        this.toastService.show('error', 'Please provide LTE SUB.');
         return;
       }
       operation = 'DEL_SUB';
     } else if (deleteType === 'KI') {
       if (!this.imsi) {
-        this.status = { type: 'error', msg: 'Please provide LTE IMSI.' };
+        this.toastService.show('error', 'Please provide LTE IMSI.');
         return;
       }
       operation = 'DEL_KI';
     } else if (deleteType === 'ALL') {
       if (!this.sub || !this.imsi) {
-        this.status = {
-          type: 'error',
-          msg: 'Please provide both LTE SUB and LTE IMSI to delete all.',
-        };
+        this.toastService.show('error', 'Please provide both LTE SUB and LTE IMSI to delete all.');
         return;
       }
       operation = 'DEL_ALL';
@@ -74,16 +74,16 @@ export class DeleteUserComponent {
     this.lteApiService.deleteUser(payload).subscribe({
       next: (data) => {
         if (data.result === 'success') {
-          this.status = { type: 'success', msg: data.message };
+          this.toastService.show('success', data.message);
           this.sub = '';
           this.imsi = '';
         } else {
-          this.status = { type: 'error', msg: data.message };
+          this.toastService.show('error', data.message);
         }
       },
       error: (e) => {
         console.error(e);
-        this.status = { type: 'error', msg: 'Failed to delete user.' };
+        this.toastService.show('error', 'Failed to delete user.');
       },
     });
   }

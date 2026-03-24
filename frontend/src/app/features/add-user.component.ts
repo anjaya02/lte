@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Database, Save } from 'lucide-angular';
 import { LteApiService } from '../core/lte-api.service';
+import { ToastService } from '../core/toast.service';
 
 @Component({
   selector: 'app-add-user',
@@ -31,14 +32,15 @@ export class AddUserComponent {
     AB_SO: '',
   };
 
-  status = { type: '', msg: '' };
   userFound = false;
 
-  constructor(private lteApiService: LteApiService) {}
+  constructor(
+    private lteApiService: LteApiService,
+    private toastService: ToastService,
+  ) {}
 
   handleGetDetails() {
     if (!this.sub) return;
-    this.status = { type: '', msg: '' };
     this.showDetails = false;
     this.userFound = false;
 
@@ -62,8 +64,9 @@ export class AddUserComponent {
             }
             this.showDetails = true;
             this.userFound = true;
+            this.toastService.show('success', 'User details loaded successfully.');
           } else {
-            this.status = { type: 'error', msg: data.message || 'User not found' };
+            this.toastService.show('error', data.message || 'User not found');
             this.userData = { LTE_IMSI: '', LTE_ISDN: '', LTE_PROFILE: '', LTE_PKG: '' };
             this.serviceOrder = { CIRT_TYPE: '', VOICE_SO: '', BB_SO: '', AB_SO: '' };
             this.showDetails = false;
@@ -72,22 +75,19 @@ export class AddUserComponent {
         },
         error: (e) => {
           console.error(e);
-          this.status = { type: 'error', msg: 'Failed to fetch details.' };
+          this.toastService.show('error', 'Failed to fetch details.');
         },
       });
   }
 
   handleCreate() {
     if (!this.sub || !this.userData.LTE_IMSI) {
-      this.status = { type: 'error', msg: 'Please provide LTE SUB and LTE IMSI.' };
+      this.toastService.show('error', 'Please provide LTE SUB and LTE IMSI.');
       return;
     }
 
     if (this.serviceOrder.CIRT_TYPE !== 'S' && this.serviceOrder.CIRT_TYPE !== 'N') {
-      this.status = {
-        type: 'error',
-        msg: 'Please set CIRT TYPE as S (ADD_SERVICE_ALL) or N (ADD_SOD_ALL).',
-      };
+      this.toastService.show('error', 'Please set CIRT TYPE as S (ADD_SERVICE_ALL) or N (ADD_SOD_ALL).');
       return;
     }
 
@@ -115,14 +115,14 @@ export class AddUserComponent {
     this.lteApiService.createUser(payload).subscribe({
       next: (data) => {
         if (data.result === 'success') {
-          this.status = { type: 'success', msg: data.message };
+          this.toastService.show('success', data.message);
         } else {
-          this.status = { type: 'error', msg: data.message };
+          this.toastService.show('error', data.message);
         }
       },
       error: (e) => {
         console.error(e);
-        this.status = { type: 'error', msg: 'Failed to create user.' };
+        this.toastService.show('error', 'Failed to create user.');
       },
     });
   }

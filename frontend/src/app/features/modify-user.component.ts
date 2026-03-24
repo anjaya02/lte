@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Save } from 'lucide-angular';
 import { LteApiService } from '../core/lte-api.service';
+import { ToastService } from '../core/toast.service';
 
 @Component({
   selector: 'app-modify-user',
@@ -15,13 +16,15 @@ export class ModifyUserComponent {
 
   sub = '';
   pkg = '';
-  status = { type: '', msg: '' };
 
-  constructor(private lteApiService: LteApiService) {}
+  constructor(
+    private lteApiService: LteApiService,
+    private toastService: ToastService,
+  ) {}
 
   handleUpdate() {
     if (!this.sub || !this.pkg) {
-      this.status = { type: 'error', msg: 'Please provide both LTE SUB and LTE PKG.' };
+      this.toastService.show('error', 'Please provide both LTE SUB and LTE PKG.');
       return;
     }
 
@@ -30,16 +33,16 @@ export class ModifyUserComponent {
       .subscribe({
         next: (data) => {
           if (data.result === 'success') {
-            this.status = { type: 'success', msg: data.message };
+            this.toastService.show('success', data.message);
             this.sub = '';
             this.pkg = '';
           } else {
-            this.status = { type: 'error', msg: data.message };
+            this.toastService.show('error', data.message);
           }
         },
         error: (e) => {
           console.error(e);
-          this.status = { type: 'error', msg: 'Failed to update user package.' };
+          this.toastService.show('error', 'Failed to update user package.');
         },
       });
   }

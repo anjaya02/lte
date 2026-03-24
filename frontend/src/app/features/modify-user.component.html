@@ -4,13 +4,6 @@
   </div>
 
   <div class="panel-section">
-    <div
-      *ngIf="status.msg"
-      [ngClass]="['status-msg', status.type === 'error' ? 'status-error' : 'status-success']"
-    >
-      {{ status.msg }}
-    </div>
-
     <div class="form-group">
       <label class="form-label">LTE SUB</label>
       <input type="text" class="form-input" placeholder="Enter LTE SUB" [(ngModel)]="sub" />

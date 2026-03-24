@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LucideAngularModule, Search } from 'lucide-angular';
 import { LteApiService } from '../core/lte-api.service';
+import { ToastService } from '../core/toast.service';
 
 @Component({
   selector: 'app-search-user',
@@ -15,13 +16,14 @@ export class SearchUserComponent {
 
   imsiSearch = '';
   subResult = '';
-  imsiSearchStatus: string | null = null;
 
   subSearch = '';
   imsiResult = '';
-  subSearchStatus: string | null = null;
 
-  constructor(private lteApiService: LteApiService) {}
+  constructor(
+    private lteApiService: LteApiService,
+    private toastService: ToastService,
+  ) {}
 
   handleSearchByImsi() {
     if (!this.imsiSearch) return;
@@ -29,15 +31,15 @@ export class SearchUserComponent {
       next: (data) => {
         if (data.result === 'success') {
           this.subResult = data.message;
-          this.imsiSearchStatus = null;
+          this.toastService.show('success', 'Search completed successfully.');
         } else {
           this.subResult = '';
-          this.imsiSearchStatus = data.message;
+          this.toastService.show('error', data.message);
         }
       },
       error: (e) => {
         console.error(e);
-        this.imsiSearchStatus = 'Failed to fetch data';
+        this.toastService.show('error', 'Failed to fetch data');
       },
     });
   }
@@ -48,15 +50,15 @@ export class SearchUserComponent {
       next: (data) => {
         if (data.result === 'success') {
           this.imsiResult = data.message;
-          this.subSearchStatus = null;
+          this.toastService.show('success', 'Search completed successfully.');
         } else {
           this.imsiResult = '';
-          this.subSearchStatus = data.message;
+          this.toastService.show('error', data.message);
         }
       },
       error: (e) => {
         console.error(e);
-        this.subSearchStatus = 'Failed to fetch data';
+        this.toastService.show('error', 'Failed to fetch data');
       },
     });
   }
