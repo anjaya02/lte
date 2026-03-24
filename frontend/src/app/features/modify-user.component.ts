@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Save } from 'lucide-angular';
+import { LteApiService } from '../core/lte-api.service';
 
 @Component({
   selector: 'app-modify-user',
@@ -17,7 +17,7 @@ export class ModifyUserComponent {
   pkg = '';
   status = { type: '', msg: '' };
 
-  constructor(private http: HttpClient) {}
+  constructor(private lteApiService: LteApiService) {}
 
   handleUpdate() {
     if (!this.sub || !this.pkg) {
@@ -25,11 +25,8 @@ export class ModifyUserComponent {
       return;
     }
 
-    this.http
-      .post<any>('http://localhost:5000/api/users/modify', {
-        LTE_SUB: this.sub,
-        LTE_PKG: this.pkg,
-      })
+    this.lteApiService
+      .modifyUser({ LTE_SUB: this.sub, LTE_PKG: this.pkg })
       .subscribe({
         next: (data) => {
           if (data.result === 'success') {

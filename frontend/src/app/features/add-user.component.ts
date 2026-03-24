@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Database, Save } from 'lucide-angular';
+import { LteApiService } from '../core/lte-api.service';
 
 @Component({
   selector: 'app-add-user',
@@ -34,7 +34,7 @@ export class AddUserComponent {
   status = { type: '', msg: '' };
   userFound = false;
 
-  constructor(private http: HttpClient) {}
+  constructor(private lteApiService: LteApiService) {}
 
   handleGetDetails() {
     if (!this.sub) return;
@@ -42,16 +42,15 @@ export class AddUserComponent {
     this.showDetails = false;
     this.userFound = false;
 
-    this.http
-      .post<any>('http://localhost:5000/api/users/details', { LTE_SUB: this.sub, LTE_IMSI: '' })
-      .subscribe({
+    this.lteApiService.getUserDetails({ LTE_SUB: this.sub, LTE_IMSI: '' }).subscribe({
         next: (data) => {
           if (data.status === 'success') {
+            const workOrders = data.workOrders;
             this.userData = {
-              LTE_IMSI: data.workOrders.LTE_IMSI || '',
-              LTE_ISDN: data.workOrders.LTE_ISDN || '',
-              LTE_PROFILE: data.workOrders.LTE_PROFILE || '',
-              LTE_PKG: data.workOrders.LTE_PKG || '',
+              LTE_IMSI: workOrders?.LTE_IMSI || '',
+              LTE_ISDN: workOrders?.LTE_ISDN || '',
+              LTE_PROFILE: workOrders?.LTE_PROFILE || '',
+              LTE_PKG: workOrders?.LTE_PKG || '',
             };
             if (data.serviceOrders && data.serviceOrders.length > 0) {
               this.serviceOrder = {
@@ -64,7 +63,7 @@ export class AddUserComponent {
             this.showDetails = true;
             this.userFound = true;
           } else {
-            this.status = { type: 'error', msg: data.message };
+            this.status = { type: 'error', msg: data.message || 'User not found' };
             this.userData = { LTE_IMSI: '', LTE_ISDN: '', LTE_PROFILE: '', LTE_PKG: '' };
             this.serviceOrder = { CIRT_TYPE: '', VOICE_SO: '', BB_SO: '', AB_SO: '' };
             this.showDetails = false;
@@ -81,6 +80,14 @@ export class AddUserComponent {
   handleCreate() {
     if (!this.sub || !this.userData.LTE_IMSI) {
       this.status = { type: 'error', msg: 'Please provide LTE SUB and LTE IMSI.' };
+      return;
+    }
+
+    if (this.serviceOrder.CIRT_TYPE !== 'S' && this.serviceOrder.CIRT_TYPE !== 'N') {
+      this.status = {
+        type: 'error',
+        msg: 'Please set CIRT TYPE as S (ADD_SERVICE_ALL) or N (ADD_SOD_ALL).',
+      };
       return;
     }
 
@@ -105,7 +112,7 @@ export class AddUserComponent {
       payload.SO_ID_AB = this.serviceOrder.AB_SO;
     }
 
-    this.http.post<any>('http://localhost:5000/api/users/create', payload).subscribe({
+    this.lteApiService.createUser(payload).subscribe({
       next: (data) => {
         if (data.result === 'success') {
           this.status = { type: 'success', msg: data.message };

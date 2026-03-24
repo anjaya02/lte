@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Trash2, X, AlertTriangle } from 'lucide-angular';
+import { LteApiService } from '../core/lte-api.service';
 
 @Component({
   selector: 'app-delete-user',
@@ -25,9 +25,7 @@ export class DeleteUserComponent {
     operation: '',
   };
 
-  private readonly API_URL = 'http://localhost:5000/api/users/delete';
-
-  constructor(private http: HttpClient) {}
+  constructor(private lteApiService: LteApiService) {}
 
   handleDeleteClick(deleteType: string) {
     let operation = '';
@@ -73,7 +71,7 @@ export class DeleteUserComponent {
       payload.LTE_SUB = this.sub;
     }
 
-    this.http.post<any>(this.API_URL, payload).subscribe({
+    this.lteApiService.deleteUser(payload).subscribe({
       next: (data) => {
         if (data.result === 'success') {
           this.status = { type: 'success', msg: data.message };

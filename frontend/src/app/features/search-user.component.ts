@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { HttpClient } from '@angular/common/http';
 import { LucideAngularModule, Search } from 'lucide-angular';
+import { LteApiService } from '../core/lte-api.service';
 
 @Component({
   selector: 'app-search-user',
@@ -21,13 +21,11 @@ export class SearchUserComponent {
   imsiResult = '';
   subSearchStatus: string | null = null;
 
-  private readonly API_URL = 'http://localhost:5000/api/users/list';
-
-  constructor(private http: HttpClient) {}
+  constructor(private lteApiService: LteApiService) {}
 
   handleSearchByImsi() {
     if (!this.imsiSearch) return;
-    this.http.post<any>(this.API_URL, { LTE_SUB: '', LTE_IMSI: this.imsiSearch }).subscribe({
+    this.lteApiService.listUser({ LTE_SUB: '', LTE_IMSI: this.imsiSearch }).subscribe({
       next: (data) => {
         if (data.result === 'success') {
           this.subResult = data.message;
@@ -46,7 +44,7 @@ export class SearchUserComponent {
 
   handleSearchBySub() {
     if (!this.subSearch) return;
-    this.http.post<any>(this.API_URL, { LTE_SUB: this.subSearch, LTE_IMSI: '' }).subscribe({
+    this.lteApiService.listUser({ LTE_SUB: this.subSearch, LTE_IMSI: '' }).subscribe({
       next: (data) => {
         if (data.result === 'success') {
           this.imsiResult = data.message;
