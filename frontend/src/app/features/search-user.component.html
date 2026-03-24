@@ -1,0 +1,73 @@
+<div class="glass-panel" style="max-width: 800px; margin: 0 auto">
+  <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border)">
+    <h2 style="margin: 0; font-size: 1.25rem">Search User</h2>
+  </div>
+
+  <div class="panel-section">
+    <div *ngIf="imsiSearchStatus" class="status-msg status-error">
+      {{ imsiSearchStatus }}
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">LTE IMSI</label>
+      <input 
+        type="text" 
+        class="form-input" 
+        placeholder="Enter LTE IMSI" 
+        [(ngModel)]="imsiSearch"
+        (keydown.enter)="handleSearchByImsi()"
+      />
+    </div>
+    
+    <div class="form-group">
+      <div class="form-label"></div>
+      <button class="btn" (click)="handleSearchByImsi()">
+        <lucide-icon [img]="SearchIcon" [size]="16"></lucide-icon> Search
+      </button>
+    </div>
+    
+    <div class="form-group" style="margin-top: 2rem">
+      <label class="form-label">LTE SUB</label>
+      <input 
+        type="text" 
+        class="form-input" 
+        readonly 
+        [value]="subResult"
+      />
+    </div>
+  </div>
+
+  <div class="panel-section">
+    <div *ngIf="subSearchStatus" class="status-msg status-error">
+      {{ subSearchStatus }}
+    </div>
+    
+    <div class="form-group">
+      <label class="form-label">LTE SUB</label>
+      <input 
+        type="text" 
+        class="form-input" 
+        placeholder="Enter LTE SUB" 
+        [(ngModel)]="subSearch"
+        (keydown.enter)="handleSearchBySub()"
+      />
+    </div>
+    
+    <div class="form-group">
+      <div class="form-label"></div>
+      <button class="btn" (click)="handleSearchBySub()">
+        <lucide-icon [img]="SearchIcon" [size]="16"></lucide-icon> Search
+      </button>
+    </div>
+    
+    <div class="form-group" style="margin-top: 2rem">
+      <label class="form-label">LTE IMSI</label>
+      <input 
+        type="text" 
+        class="form-input" 
+        readonly 
+        [value]="imsiResult"
+      />
+    </div>
+  </div>
+</div>

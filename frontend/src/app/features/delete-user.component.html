@@ -1,0 +1,85 @@
+<div class="glass-panel" style="max-width: 800px; margin: 0 auto">
+  <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border)">
+    <h2 style="margin: 0; font-size: 1.25rem">Delete User</h2>
+  </div>
+
+  <div class="panel-section">
+    <div *ngIf="status.msg" [ngClass]="['status-msg', status.type === 'error' ? 'status-error' : 'status-success']">
+      {{ status.msg }}
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">LTE SUB</label>
+      <input 
+        type="text" 
+        class="form-input" 
+        placeholder="Enter LTE SUB" 
+        [(ngModel)]="sub"
+      />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">LTE IMSI</label>
+      <input 
+        type="text" 
+        class="form-input" 
+        placeholder="Enter LTE IMSI" 
+        [(ngModel)]="imsi"
+      />
+    </div>
+
+    <div class="form-group" style="margin-top: 2rem">
+      <div class="form-label"></div>
+      <div style="display: flex; gap: 1rem">
+        <button class="btn btn-danger" (click)="handleDeleteClick('ALL')">
+          <lucide-icon [img]="Trash2Icon" [size]="16"></lucide-icon> Delete All
+        </button>
+        <button class="btn btn-danger" (click)="handleDeleteClick('KI')">
+          <lucide-icon [img]="Trash2Icon" [size]="16"></lucide-icon> Delete KI
+        </button>
+        <button class="btn btn-danger" (click)="handleDeleteClick('SUB')">
+          <lucide-icon [img]="Trash2Icon" [size]="16"></lucide-icon> Delete SUB
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="confirmModal.show" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000
+  ">
+    <div style="
+      background: var(--bg-panel);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      backdrop-filter: blur(20px)
+    ">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem">
+        <lucide-icon [img]="AlertTriangleIcon" [size]="24" color="#ef4444"></lucide-icon>
+        <h3 style="margin: 0; font-size: 1.1rem">Confirm Delete</h3>
+      </div>
+      <p style="color: var(--text-muted); margin-bottom: 1.5rem">
+        Are you sure you want to delete {{ confirmModal.deleteType }}? This action cannot be undone.
+      </p>
+      <div style="display: flex; gap: 1rem; justify-content: flex-end">
+        <button class="btn btn-secondary" (click)="confirmModal.show = false">
+          <lucide-icon [img]="XIcon" [size]="16"></lucide-icon> Cancel
+        </button>
+        <button class="btn btn-danger" (click)="handleConfirmDelete()">
+          <lucide-icon [img]="Trash2Icon" [size]="16"></lucide-icon> Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

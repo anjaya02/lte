@@ -1,0 +1,28 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "lteSub": "SUB123",
+      "lteImsi": "IMSI999",
+      "lteIsdn": "ISDN444",
+      "lteProfile": "PREMIUM",
+      "ltePkg": "PKG-5G-100GB"
+    },
+    {
+      "id": 2,
+      "lteSub": "SUB456",
+      "lteImsi": "IMSI888",
+      "lteIsdn": "ISDN555",
+      "lteProfile": "BASIC",
+      "ltePkg": "PKG-4G-UNLIMITED"
+    },
+    {
+      "id": 3,
+      "lteSub": "SUB789",
+      "lteImsi": "IMSI777",
+      "lteIsdn": "ISDN666",
+      "lteProfile": "BUSINESS",
+      "ltePkg": "PKG-ENTERPRISE"
+    }
+  ]
+}
