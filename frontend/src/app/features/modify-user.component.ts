@@ -25,23 +25,25 @@ export class ModifyUserComponent {
       return;
     }
 
-    this.http.put<any>('http://localhost:5000/api/users/modify', {
-      lteSub: this.sub,
-      ltePkg: this.pkg
-    }).subscribe({
-      next: (data) => {
-        if (data.success) {
-          this.status = { type: 'success', msg: data.message };
-          this.sub = '';
-          this.pkg = '';
-        } else {
-          this.status = { type: 'error', msg: data.message };
-        }
-      },
-      error: (e) => {
-        console.error(e);
-        this.status = { type: 'error', msg: 'Failed to update user package.' };
-      }
-    });
+    this.http
+      .post<any>('http://localhost:5000/api/users/modify', {
+        LTE_SUB: this.sub,
+        LTE_PKG: this.pkg,
+      })
+      .subscribe({
+        next: (data) => {
+          if (data.result === 'success') {
+            this.status = { type: 'success', msg: data.message };
+            this.sub = '';
+            this.pkg = '';
+          } else {
+            this.status = { type: 'error', msg: data.message };
+          }
+        },
+        error: (e) => {
+          console.error(e);
+          this.status = { type: 'error', msg: 'Failed to update user package.' };
+        },
+      });
   }
 }

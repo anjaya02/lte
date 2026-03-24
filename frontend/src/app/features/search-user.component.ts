@@ -21,16 +21,16 @@ export class SearchUserComponent {
   imsiResult = '';
   subSearchStatus: string | null = null;
 
-  private readonly API_URL = 'http://localhost:5000/api/users/search';
+  private readonly API_URL = 'http://localhost:5000/api/users/list';
 
   constructor(private http: HttpClient) {}
 
   handleSearchByImsi() {
     if (!this.imsiSearch) return;
-    this.http.get<any>(`${this.API_URL}?lteImsi=${this.imsiSearch}`).subscribe({
+    this.http.post<any>(this.API_URL, { LTE_SUB: '', LTE_IMSI: this.imsiSearch }).subscribe({
       next: (data) => {
-        if (data.success) {
-          this.subResult = data.data.lteSub;
+        if (data.result === 'success') {
+          this.subResult = data.message;
           this.imsiSearchStatus = null;
         } else {
           this.subResult = '';
@@ -40,16 +40,16 @@ export class SearchUserComponent {
       error: (e) => {
         console.error(e);
         this.imsiSearchStatus = 'Failed to fetch data';
-      }
+      },
     });
   }
 
   handleSearchBySub() {
     if (!this.subSearch) return;
-    this.http.get<any>(`${this.API_URL}?lteSub=${this.subSearch}`).subscribe({
+    this.http.post<any>(this.API_URL, { LTE_SUB: this.subSearch, LTE_IMSI: '' }).subscribe({
       next: (data) => {
-        if (data.success) {
-          this.imsiResult = data.data.lteImsi;
+        if (data.result === 'success') {
+          this.imsiResult = data.message;
           this.subSearchStatus = null;
         } else {
           this.imsiResult = '';
@@ -59,7 +59,7 @@ export class SearchUserComponent {
       error: (e) => {
         console.error(e);
         this.subSearchStatus = 'Failed to fetch data';
-      }
+      },
     });
   }
 }

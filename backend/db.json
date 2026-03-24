@@ -1,28 +1,41 @@
 {
   "users": [
     {
-      "id": 1,
-      "lteSub": "SUB123",
-      "lteImsi": "IMSI999",
-      "lteIsdn": "ISDN444",
-      "lteProfile": "PREMIUM",
-      "ltePkg": "PKG-5G-100GB"
+      "LTE_SUB": "94113600007",
+      "LTE_IMSI": "413122224062959",
+      "LTE_ISDN": "94553151508",
+      "LTE_PROFILE": "100",
+      "LTE_PKG": "200"
     },
     {
-      "id": 2,
-      "lteSub": "SUB456",
-      "lteImsi": "IMSI888",
-      "lteIsdn": "ISDN555",
-      "lteProfile": "BASIC",
-      "ltePkg": "PKG-4G-UNLIMITED"
+      "LTE_SUB": "94113600008",
+      "LTE_IMSI": "413122224062960",
+      "LTE_ISDN": "94553151509",
+      "LTE_PROFILE": "100",
+      "LTE_PKG": "190"
     },
     {
-      "id": 3,
-      "lteSub": "SUB789",
-      "lteImsi": "IMSI777",
-      "lteIsdn": "ISDN666",
-      "lteProfile": "BUSINESS",
-      "ltePkg": "PKG-ENTERPRISE"
+      "LTE_SUB": "94113600009",
+      "LTE_IMSI": "413122224062961",
+      "LTE_ISDN": "94553151510",
+      "LTE_PROFILE": "200",
+      "LTE_PKG": "189"
+    }
+  ],
+  "serviceOrders": [
+    {
+      "LTE_SUB": "94113600007",
+      "CIRT_TYPE": "S",
+      "VOICE_SO": "SI2026021917458468",
+      "BB_SO": "SI2026021917458474",
+      "AB_SO": "SI2026021917458480"
+    },
+    {
+      "LTE_SUB": "94113600008",
+      "CIRT_TYPE": "N",
+      "VOICE_SO": "SI2026021917458469",
+      "BB_SO": "SI2026021917458475",
+      "AB_SO": "SI2026021917458481"
     }
   ]
 }

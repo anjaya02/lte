@@ -1,23 +1,21 @@
 <div class="glass-panel" style="max-width: 800px; margin: 0 auto">
   <div style="padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border)">
-    <h2 style="margin: 0; font-size: 1.25rem">Add User / Update IMSI</h2>
+    <h2 style="margin: 0; font-size: 1.25rem">SUB CREATE</h2>
   </div>
 
   <div class="panel-section">
-    <div *ngIf="status.msg" [ngClass]="['status-msg', status.type === 'error' ? 'status-error' : 'status-success']">
+    <div
+      *ngIf="status.msg"
+      [ngClass]="['status-msg', status.type === 'error' ? 'status-error' : 'status-success']"
+    >
       {{ status.msg }}
     </div>
-    
+
     <div class="form-group">
       <label class="form-label">LTE SUB</label>
-      <input 
-        type="text" 
-        class="form-input" 
-        placeholder="Enter LTE SUB" 
-        [(ngModel)]="sub"
-      />
+      <input type="text" class="form-input" placeholder="Enter LTE SUB" [(ngModel)]="sub" />
     </div>
-    
+
     <div class="form-group">
       <div class="form-label"></div>
       <button class="btn btn-secondary" (click)="handleGetDetails()">
@@ -25,43 +23,114 @@
       </button>
     </div>
 
-    <div style="padding: 1.5rem; margin-top: 2rem; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid var(--glass-border)">
-      <h3 style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500">Clarity</h3>
-      
+    <div
+      style="
+        padding: 1.5rem;
+        margin-top: 2rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+        border: 1px solid var(--glass-border);
+      "
+    >
+      <h3
+        style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500"
+      >
+        Work Orders
+      </h3>
+
       <div class="form-group">
         <label class="form-label">LTE IMSI</label>
-        <input type="text" class="form-input" readonly [value]="userData.lteImsi" />
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label" style="color: var(--accent-color)">New LTE IMSI</label>
-        <input 
-          type="text" 
-          class="form-input" 
-          placeholder="Enter new LTE IMSI" 
-          style="border-color: var(--accent-color)"
-          [(ngModel)]="newImsi"
+        <input
+          type="text"
+          class="form-input"
+          [(ngModel)]="userData.LTE_IMSI"
+          placeholder="Enter LTE IMSI"
         />
       </div>
-      
+
       <div class="form-group">
         <label class="form-label">LTE ISDN</label>
-        <input type="text" class="form-input" readonly [value]="userData.lteIsdn" />
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">LTE Profile</label>
-        <input type="text" class="form-input" readonly [value]="userData.lteProfile" />
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">LTE PKG</label>
-        <input type="text" class="form-input" readonly [value]="userData.ltePkg" />
+        <input type="text" class="form-input" readonly [value]="userData.LTE_ISDN" />
       </div>
 
-      <div class="form-group" *ngIf="showDetails && userFound">
+      <div class="form-group">
+        <label class="form-label">LTE PROFILE</label>
+        <input
+          type="text"
+          class="form-input"
+          [(ngModel)]="userData.LTE_PROFILE"
+          placeholder="Enter LTE Profile"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">LTE PKG</label>
+        <input
+          type="text"
+          class="form-input"
+          [(ngModel)]="userData.LTE_PKG"
+          placeholder="Enter LTE PKG"
+        />
+      </div>
+    </div>
+
+    <div
+      style="
+        padding: 1.5rem;
+        margin-top: 1rem;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 12px;
+        border: 1px solid var(--glass-border);
+      "
+    >
+      <h3
+        style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem; font-weight: 500"
+      >
+        Service Orders
+      </h3>
+
+      <div class="form-group">
+        <label class="form-label">CIRT TYPE</label>
+        <select class="form-input" [(ngModel)]="serviceOrder.CIRT_TYPE">
+          <option value="">Select Type</option>
+          <option value="S">S - ADD_SERVICE_ALL</option>
+          <option value="N">N - ADD_SOD_ALL</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">VOICE SO</label>
+        <input
+          type="text"
+          class="form-input"
+          [(ngModel)]="serviceOrder.VOICE_SO"
+          placeholder="Enter Voice SO ID"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">BB SO</label>
+        <input
+          type="text"
+          class="form-input"
+          [(ngModel)]="serviceOrder.BB_SO"
+          placeholder="Enter BB SO ID"
+        />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">AB SO</label>
+        <input
+          type="text"
+          class="form-input"
+          [(ngModel)]="serviceOrder.AB_SO"
+          placeholder="Enter AB SO ID"
+        />
+      </div>
+
+      <div class="form-group" style="margin-top: 2rem">
         <div class="form-label"></div>
-        <button class="btn" (click)="handleUpdate()">
+        <button class="btn" (click)="handleCreate()">
           <lucide-icon [img]="SaveIcon" [size]="16"></lucide-icon> Create User
         </button>
       </div>

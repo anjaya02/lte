@@ -18,51 +18,64 @@ export class DeleteUserComponent {
   sub = '';
   imsi = '';
   status = { type: '', msg: '' };
-  
+
   confirmModal = {
     show: false,
     deleteType: '',
-    url: ''
+    operation: '',
   };
+
+  private readonly API_URL = 'http://localhost:5000/api/users/delete';
 
   constructor(private http: HttpClient) {}
 
   handleDeleteClick(deleteType: string) {
-    let url = '';
+    let operation = '';
 
     if (deleteType === 'SUB') {
       if (!this.sub) {
         this.status = { type: 'error', msg: 'Please provide LTE SUB.' };
         return;
       }
-      url = `http://localhost:5000/api/users/sub/${encodeURIComponent(this.sub)}`;
+      operation = 'DEL_SUB';
     } else if (deleteType === 'KI') {
       if (!this.imsi) {
         this.status = { type: 'error', msg: 'Please provide LTE IMSI.' };
         return;
       }
-      url = `http://localhost:5000/api/users/imsi/${encodeURIComponent(this.imsi)}`;
+      operation = 'DEL_KI';
     } else if (deleteType === 'ALL') {
       if (!this.sub || !this.imsi) {
         this.status = {
           type: 'error',
-          msg: 'Please provide both LTE SUB and LTE IMSI to delete all.'
+          msg: 'Please provide both LTE SUB and LTE IMSI to delete all.',
         };
         return;
       }
-      url = `http://localhost:5000/api/users/all?sub=${encodeURIComponent(this.sub)}&imsi=${encodeURIComponent(this.imsi)}`;
+      operation = 'DEL_ALL';
     }
 
-    this.confirmModal = { show: true, deleteType, url };
+    this.confirmModal = { show: true, deleteType, operation };
   }
 
   handleConfirmDelete() {
-    const { url } = this.confirmModal;
-    this.confirmModal = { show: false, deleteType: '', url: '' };
+    const { operation } = this.confirmModal;
+    this.confirmModal = { show: false, deleteType: '', operation: '' };
 
-    this.http.delete<any>(url).subscribe({
+    const payload: any = { operation };
+
+    if (operation === 'DEL_ALL') {
+      payload.LTE_SUB = this.sub;
+      payload.LTE_IMSI = this.imsi;
+    } else if (operation === 'DEL_KI') {
+      payload.LTE_IMSI = this.imsi;
+    } else if (operation === 'DEL_SUB') {
+      payload.LTE_SUB = this.sub;
+    }
+
+    this.http.post<any>(this.API_URL, payload).subscribe({
       next: (data) => {
-        if (data.success) {
+        if (data.result === 'success') {
           this.status = { type: 'success', msg: data.message };
           this.sub = '';
           this.imsi = '';
@@ -73,7 +86,7 @@ export class DeleteUserComponent {
       error: (e) => {
         console.error(e);
         this.status = { type: 'error', msg: 'Failed to delete user.' };
-      }
+      },
     });
   }
 }

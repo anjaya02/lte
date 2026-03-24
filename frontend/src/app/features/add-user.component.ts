@@ -15,16 +15,22 @@ export class AddUserComponent {
   readonly SaveIcon = Save;
 
   sub = '';
-  newImsi = '';
   showDetails = false;
-  
+
   userData = {
-    lteImsi: '',
-    lteIsdn: '',
-    lteProfile: '',
-    ltePkg: ''
+    LTE_IMSI: '',
+    LTE_ISDN: '',
+    LTE_PROFILE: '',
+    LTE_PKG: '',
   };
-  
+
+  serviceOrder = {
+    CIRT_TYPE: '',
+    VOICE_SO: '',
+    BB_SO: '',
+    AB_SO: '',
+  };
+
   status = { type: '', msg: '' };
   userFound = false;
 
@@ -35,64 +41,82 @@ export class AddUserComponent {
     this.status = { type: '', msg: '' };
     this.showDetails = false;
     this.userFound = false;
-    
-    this.http.get<any>(`http://localhost:5000/api/users/search?lteSub=${this.sub}`).subscribe({
-      next: (data) => {
-        if (data.success) {
-          this.userData = {
-            lteImsi: data.data.lteImsi || '',
-            lteIsdn: data.data.lteIsdn || '',
-            lteProfile: data.data.lteProfile || '',
-            ltePkg: data.data.ltePkg || ''
-          };
-          this.showDetails = true;
-          this.userFound = true;
-        } else {
-          this.status = { type: 'error', msg: data.message };
-          this.userData = { lteImsi: '', lteIsdn: '', lteProfile: '', ltePkg: '' };
-          this.showDetails = false;
-          this.userFound = false;
-        }
-      },
-      error: (e) => {
-        console.error(e);
-        this.status = { type: 'error', msg: 'Failed to fetch details.' };
-      }
-    });
+
+    this.http
+      .post<any>('http://localhost:5000/api/users/details', { LTE_SUB: this.sub, LTE_IMSI: '' })
+      .subscribe({
+        next: (data) => {
+          if (data.status === 'success') {
+            this.userData = {
+              LTE_IMSI: data.workOrders.LTE_IMSI || '',
+              LTE_ISDN: data.workOrders.LTE_ISDN || '',
+              LTE_PROFILE: data.workOrders.LTE_PROFILE || '',
+              LTE_PKG: data.workOrders.LTE_PKG || '',
+            };
+            if (data.serviceOrders && data.serviceOrders.length > 0) {
+              this.serviceOrder = {
+                CIRT_TYPE: data.serviceOrders[0].CIRT_TYPE || '',
+                VOICE_SO: data.serviceOrders[0].VOICE_SO || '',
+                BB_SO: data.serviceOrders[0].BB_SO || '',
+                AB_SO: data.serviceOrders[0].AB_SO || '',
+              };
+            }
+            this.showDetails = true;
+            this.userFound = true;
+          } else {
+            this.status = { type: 'error', msg: data.message };
+            this.userData = { LTE_IMSI: '', LTE_ISDN: '', LTE_PROFILE: '', LTE_PKG: '' };
+            this.serviceOrder = { CIRT_TYPE: '', VOICE_SO: '', BB_SO: '', AB_SO: '' };
+            this.showDetails = false;
+            this.userFound = false;
+          }
+        },
+        error: (e) => {
+          console.error(e);
+          this.status = { type: 'error', msg: 'Failed to fetch details.' };
+        },
+      });
   }
 
-  handleUpdate() {
-    if (!this.sub) return;
-    
-    const payload: any = {
-      lteSub: this.sub,
-      lteIsdn: this.userData.lteIsdn,
-      lteProfile: this.userData.lteProfile,
-      ltePkg: this.userData.ltePkg
-    };
-    
-    if (this.newImsi) {
-      payload.newLteImsi = this.newImsi;
-    } else {
-      payload.lteImsi = this.userData.lteImsi;
+  handleCreate() {
+    if (!this.sub || !this.userData.LTE_IMSI) {
+      this.status = { type: 'error', msg: 'Please provide LTE SUB and LTE IMSI.' };
+      return;
     }
-    
-    this.http.post<any>('http://localhost:5000/api/users/add', payload).subscribe({
+
+    // Determine operation based on CIRT_TYPE: S -> ADD_SERVICE_ALL, N -> ADD_SOD_ALL
+    const operation = this.serviceOrder.CIRT_TYPE === 'S' ? 'ADD_SERVICE_ALL' : 'ADD_SOD_ALL';
+
+    const payload: any = {
+      operation,
+      LTE_IMSI: this.userData.LTE_IMSI,
+      LTE_SUB: this.sub,
+      LTE_PROFILE: this.userData.LTE_PROFILE,
+      LTE_PKG: this.userData.LTE_PKG,
+    };
+
+    if (operation === 'ADD_SERVICE_ALL') {
+      payload.SID_VOICE = this.serviceOrder.VOICE_SO;
+      payload.SID_BB = this.serviceOrder.BB_SO;
+      payload.SID_AB = this.serviceOrder.AB_SO;
+    } else {
+      payload.SO_ID_VOICE = this.serviceOrder.VOICE_SO;
+      payload.SO_ID_BB = this.serviceOrder.BB_SO;
+      payload.SO_ID_AB = this.serviceOrder.AB_SO;
+    }
+
+    this.http.post<any>('http://localhost:5000/api/users/create', payload).subscribe({
       next: (data) => {
-        if (data.success) {
+        if (data.result === 'success') {
           this.status = { type: 'success', msg: data.message };
-          if (this.newImsi) {
-            this.userData.lteImsi = this.newImsi;
-          }
-          this.newImsi = '';
         } else {
           this.status = { type: 'error', msg: data.message };
         }
       },
       error: (e) => {
         console.error(e);
-        this.status = { type: 'error', msg: 'Failed to update IMSI.' };
-      }
+        this.status = { type: 'error', msg: 'Failed to create user.' };
+      },
     });
   }
 }

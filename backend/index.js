@@ -1,8 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs/promises');
-const path = require('path');
-require('dotenv').config({ quiet: true });
+const express = require("express");
+const cors = require("cors");
+const fs = require("fs/promises");
+const path = require("path");
+require("dotenv").config({ quiet: true });
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -10,117 +10,215 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const DB_FILE = path.join(__dirname, 'db.json');
+const DB_FILE = path.join(__dirname, "db.json");
 
 async function readDB() {
   try {
-    const data = await fs.readFile(DB_FILE, 'utf8');
+    const data = await fs.readFile(DB_FILE, "utf8");
     return JSON.parse(data);
   } catch (err) {
-    return { users: [] };
+    return { users: [], serviceOrders: [] };
   }
 }
 
 async function writeDB(db) {
   try {
-    await fs.writeFile(DB_FILE, JSON.stringify(db, null, 2), 'utf8');
+    await fs.writeFile(DB_FILE, JSON.stringify(db, null, 2), "utf8");
   } catch (err) {
-    console.error('Failed to write to DB:', err);
+    console.error("Failed to write to DB:", err);
   }
 }
 
-// 1. Search User (By IMSI or SUB)
-app.get('/api/users/search', async (req, res) => {
+// SUB LIST - Search by LTE_SUB or LTE_IMSI
+app.post("/api/users/list", async (req, res) => {
   try {
-    const { lteImsi, lteSub } = req.query;
+    const { LTE_SUB, LTE_IMSI } = req.body;
     const db = await readDB();
-    const user = db.users.find(u => 
-      (lteImsi && u.lteImsi === lteImsi) || 
-      (lteSub && u.lteSub === lteSub)
+
+    let user = null;
+    if (LTE_SUB && LTE_SUB !== "") {
+      user = db.users.find((u) => u.LTE_SUB === LTE_SUB);
+      if (user) {
+        return res.json({ result: "success", message: user.LTE_IMSI });
+      }
+    } else if (LTE_IMSI && LTE_IMSI !== "") {
+      user = db.users.find((u) => u.LTE_IMSI === LTE_IMSI);
+      if (user) {
+        return res.json({ result: "success", message: user.LTE_SUB });
+      }
+    }
+
+    return res.json({ result: "failed", message: "User not found" });
+  } catch (e) {
+    res.status(500).json({ result: "failed", message: "Server error" });
+  }
+});
+
+// GET User details with serviceOrders and workOrders
+app.post("/api/users/details", async (req, res) => {
+  try {
+    const { LTE_SUB, LTE_IMSI } = req.body;
+    const db = await readDB();
+
+    let user = null;
+    if (LTE_SUB && LTE_SUB !== "") {
+      user = db.users.find((u) => u.LTE_SUB === LTE_SUB);
+    } else if (LTE_IMSI && LTE_IMSI !== "") {
+      user = db.users.find((u) => u.LTE_IMSI === LTE_IMSI);
+    }
+
+    if (user) {
+      const serviceOrders = db.serviceOrders.filter(
+        (so) => so.LTE_SUB === user.LTE_SUB,
+      );
+      return res.json({
+        status: "success",
+        serviceOrders: serviceOrders,
+        workOrders: {
+          LTE_IMSI: user.LTE_IMSI,
+          LTE_ISDN: user.LTE_ISDN,
+          LTE_PROFILE: user.LTE_PROFILE,
+          LTE_PKG: user.LTE_PKG,
+        },
+      });
+    }
+
+    return res.json({ status: "failed", message: "User not found" });
+  } catch (e) {
+    res.status(500).json({ status: "failed", message: "Server error" });
+  }
+});
+
+// SUB CREATE - ADD_SERVICE_ALL or ADD_SOD_ALL
+app.post("/api/users/create", async (req, res) => {
+  try {
+    const {
+      operation,
+      LTE_IMSI,
+      LTE_SUB,
+      LTE_PROFILE,
+      LTE_PKG,
+      SO_ID_VOICE,
+      SO_ID_BB,
+      SO_ID_AB,
+      SID_VOICE,
+      SID_BB,
+      SID_AB,
+    } = req.body;
+
+    const db = await readDB();
+
+    // Check if user already exists
+    const existingUser = db.users.find(
+      (u) => u.LTE_SUB === LTE_SUB || u.LTE_IMSI === LTE_IMSI,
     );
-    if (user) {
-      return res.json({ success: true, data: user });
+    if (existingUser) {
+      return res.json({ result: "failed", message: "CREATE_LTE_UDR_HSS" });
     }
-    return res.status(404).json({ success: false, message: 'User not found' });
+
+    // Create new user
+    const newUser = {
+      LTE_SUB,
+      LTE_IMSI,
+      LTE_ISDN: "",
+      LTE_PROFILE,
+      LTE_PKG,
+    };
+    db.users.push(newUser);
+
+    // Create service order based on operation type
+    if (operation === "ADD_SERVICE_ALL") {
+      db.serviceOrders.push({
+        LTE_SUB,
+        CIRT_TYPE: "S",
+        VOICE_SO: SID_VOICE || "",
+        BB_SO: SID_BB || "",
+        AB_SO: SID_AB || "",
+      });
+    } else if (operation === "ADD_SOD_ALL") {
+      db.serviceOrders.push({
+        LTE_SUB,
+        CIRT_TYPE: "N",
+        VOICE_SO: SO_ID_VOICE || "",
+        BB_SO: SO_ID_BB || "",
+        AB_SO: SO_ID_AB || "",
+      });
+    }
+
+    await writeDB(db);
+    return res.json({
+      result: "success",
+      message: "LTE User Create Operation Completed",
+    });
   } catch (e) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ result: "failed", message: "CREATE_LTE_KI" });
   }
 });
 
-// 2. Add/Save User (Updates new LTE IMSI on an existing SUB)
-app.post('/api/users/add', async (req, res) => {
+// SUB DELETE - DEL_ALL, DEL_KI, DEL_SUB
+app.post("/api/users/delete", async (req, res) => {
   try {
-    const { lteSub, newLteImsi, lteImsi, lteIsdn, lteProfile, ltePkg } = req.body;
+    const { operation, LTE_IMSI, LTE_SUB } = req.body;
     const db = await readDB();
-    const user = db.users.find(u => u.lteSub === lteSub);
-    
+
+    if (operation === "DEL_ALL") {
+      const userExists = db.users.find(
+        (u) => u.LTE_SUB === LTE_SUB && u.LTE_IMSI === LTE_IMSI,
+      );
+      if (!userExists) {
+        return res.json({ result: "failed", message: "DELETE_LTE_UDR_HSS" });
+      }
+      db.users = db.users.filter(
+        (u) => !(u.LTE_SUB === LTE_SUB && u.LTE_IMSI === LTE_IMSI),
+      );
+      db.serviceOrders = db.serviceOrders.filter(
+        (so) => so.LTE_SUB !== LTE_SUB,
+      );
+    } else if (operation === "DEL_KI") {
+      const userExists = db.users.find((u) => u.LTE_IMSI === LTE_IMSI);
+      if (!userExists) {
+        return res.json({ result: "failed", message: "DELETE_LTE_KI" });
+      }
+      db.users = db.users.filter((u) => u.LTE_IMSI !== LTE_IMSI);
+    } else if (operation === "DEL_SUB") {
+      const userExists = db.users.find((u) => u.LTE_SUB === LTE_SUB);
+      if (!userExists) {
+        return res.json({ result: "failed", message: "DELETE_LTE_UDR_HSS" });
+      }
+      db.users = db.users.filter((u) => u.LTE_SUB !== LTE_SUB);
+      db.serviceOrders = db.serviceOrders.filter(
+        (so) => so.LTE_SUB !== LTE_SUB,
+      );
+    }
+
+    await writeDB(db);
+    return res.json({
+      result: "success",
+      message: "LTE User Delete Operation Completed",
+    });
+  } catch (e) {
+    res.status(500).json({ result: "failed", message: "Server error" });
+  }
+});
+
+// MODIFY APN
+app.post("/api/users/modify", async (req, res) => {
+  try {
+    const { LTE_SUB, LTE_PKG } = req.body;
+    const db = await readDB();
+    const user = db.users.find((u) => u.LTE_SUB === LTE_SUB);
+
     if (user) {
-      if (newLteImsi) user.lteImsi = newLteImsi;
-      // Depending on other backend logic, you might save other fields here as well
+      user.LTE_PKG = LTE_PKG;
       await writeDB(db);
-      return res.json({ success: true, message: 'User updated successfully', data: user });
+      return res.json({
+        result: "success",
+        message: "LTE ModAPN Operation Completed",
+      });
     }
-    // If it didn't exist, we could create it, but usually "Add User" here means provisioning.
-    return res.status(404).json({ success: false, message: 'User not found for that SUB' });
+    return res.json({ result: "failed", message: "User not found" });
   } catch (e) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// 3a. Delete by SUB
-app.delete('/api/users/sub/:sub', async (req, res) => {
-  try {
-    const { sub } = req.params;
-    const db = await readDB();
-    db.users = db.users.filter(u => u.lteSub !== sub);
-    await writeDB(db);
-    return res.json({ success: true, message: 'User deleted successfully (by SUB)' });
-  } catch (e) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// 3b. Delete by IMSI (KI)
-app.delete('/api/users/imsi/:imsi', async (req, res) => {
-  try {
-    const { imsi } = req.params;
-    const db = await readDB();
-    db.users = db.users.filter(u => u.lteImsi !== imsi);
-    await writeDB(db);
-    return res.json({ success: true, message: 'User deleted successfully (by KI)' });
-  } catch (e) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// 3c. Delete ALL
-app.delete('/api/users/all', async (req, res) => {
-  try {
-    const { sub, imsi } = req.query;
-    const db = await readDB();
-    db.users = db.users.filter(u => !(u.lteSub === sub && u.lteImsi === imsi));
-    await writeDB(db);
-    return res.json({ success: true, message: 'User deleted successfully (by ALL)' });
-  } catch (e) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// 4. Modify User (Update PKG by SUB)
-app.put('/api/users/modify', async (req, res) => {
-  try {
-    const { lteSub, ltePkg } = req.body;
-    const db = await readDB();
-    const user = db.users.find(u => u.lteSub === lteSub);
-    
-    if (user) {
-      user.ltePkg = ltePkg;
-      await writeDB(db);
-      return res.json({ success: true, message: 'User package updated', data: user });
-    }
-    return res.status(404).json({ success: false, message: 'User not found' });
-  } catch (e) {
-    res.status(500).json({ success: false, message: 'Server error' });
+    res.status(500).json({ result: "failed", message: "Server error" });
   }
 });
 

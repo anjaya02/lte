@@ -1,34 +1,52 @@
 <div class="app-container">
   <!-- Sidebar -->
   <aside class="sidebar">
-    <div class="sidebar-logo">
-      LTE Control
-    </div>
+    <div class="sidebar-logo">LTE Control</div>
     <nav style="flex: 1; padding: 1.5rem 0">
-      <div style="padding: 0 1.5rem; margin-bottom: 0.75rem; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em">
-        List
+      <div
+        style="
+          padding: 0 1.5rem;
+          margin-bottom: 0.75rem;
+          font-size: 0.75rem;
+          color: var(--text-muted);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        "
+      >
+        Query
       </div>
       <a routerLink="/search" routerLinkActive="active" class="nav-item">
-        <lucide-icon [img]="Search" [size]="18"></lucide-icon> Search User
+        <lucide-icon [img]="Search" [size]="18"></lucide-icon> SUB LIST
       </a>
-      
-      <div style="padding: 0 1.5rem; margin: 2rem 0 0.75rem; font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em">
+
+      <div
+        style="
+          padding: 0 1.5rem;
+          margin: 2rem 0 0.75rem;
+          font-size: 0.75rem;
+          color: var(--text-muted);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+        "
+      >
         Operations
       </div>
       <a routerLink="/add" routerLinkActive="active" class="nav-item">
-        <lucide-icon [img]="UserPlus" [size]="18"></lucide-icon> Add User
+        <lucide-icon [img]="UserPlus" [size]="18"></lucide-icon> SUB CREATE
       </a>
       <a routerLink="/delete" routerLinkActive="active" class="nav-item">
-        <lucide-icon [img]="UserMinus" [size]="18"></lucide-icon> Delete User
+        <lucide-icon [img]="UserMinus" [size]="18"></lucide-icon> SUB DELETE
       </a>
       <a routerLink="/modify" routerLinkActive="active" class="nav-item">
-        <lucide-icon [img]="UserCog" [size]="18"></lucide-icon> Modify User
+        <lucide-icon [img]="UserCog" [size]="18"></lucide-icon> MODIFY APN
       </a>
     </nav>
-    
+
     <div style="padding: 1.5rem; border-top: 1px solid var(--glass-border)">
       <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center">
-        Copyright © 2026 All rights reserved.<br/>
+        Copyright © 2026 All rights reserved.<br />
         IT Solution & DevOps
       </div>
     </div>
@@ -45,12 +63,39 @@
           <a href="#">VoLTE</a>
           <a href="#">VoBB</a>
           <a href="#">IP-Endpoint</a>
-          <a href="#" class="active" style="color: var(--accent-color); border-bottom: 2px solid var(--accent-color); padding-bottom: 1.3rem">LTE</a>
+          <a
+            href="#"
+            class="active"
+            style="
+              color: var(--accent-color);
+              border-bottom: 2px solid var(--accent-color);
+              padding-bottom: 1.3rem;
+            "
+            >LTE</a
+          >
         </nav>
       </div>
-      
-      <div style="display: flex; align-items: center; gap: 0.75rem; color: var(--text-main); cursor: pointer">
-        <div style="width: 30px; height: 30px; border-radius: 50%; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center">
+
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          color: var(--text-main);
+          cursor: pointer;
+        "
+      >
+        <div
+          style="
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
           <lucide-icon [img]="User" [size]="16" color="var(--accent-color)"></lucide-icon>
         </div>
         <span style="font-weight: 500; font-size: 0.9rem">Admin User</span>
