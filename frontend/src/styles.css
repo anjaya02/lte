@@ -22,9 +22,13 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family:
+    'Inter',
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
   background-color: var(--bg-dark);
-  background-image: 
+  background-image:
     radial-gradient(circle at 15% 50%, rgba(37, 99, 235, 0.06), transparent 25%),
     radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.06), transparent 25%);
   color: var(--text-main);
@@ -50,7 +54,10 @@ body {
 }
 
 /* Typography */
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--text-main);
@@ -92,7 +99,7 @@ h2 {
   font-size: 0.95rem;
   transition: all 0.3s ease;
   outline: none;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 .form-input:focus {
@@ -101,7 +108,8 @@ h2 {
   background: #ffffff;
 }
 
-.form-input:disabled, .form-input[readonly] {
+.form-input:disabled,
+.form-input[readonly] {
   background: #f3f4f6;
   color: #6b7280;
   cursor: not-allowed;
@@ -148,7 +156,7 @@ h2 {
   background: #ffffff;
   border: 1px solid var(--input-border);
   color: var(--text-main);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 .btn-secondary:hover {
   background: #f9fafb;
@@ -190,7 +198,7 @@ h2 {
   display: flex;
   flex-direction: column;
   transition: all 0.3s ease;
-  box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
 }
 
 .sidebar-logo {
@@ -217,7 +225,8 @@ h2 {
   gap: 0.75rem;
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover,
+.nav-item.active {
   color: var(--accent-color);
   background: rgba(37, 99, 235, 0.05);
   border-right: 3px solid var(--accent-color);
@@ -245,7 +254,8 @@ h2 {
   transition: color 0.2s;
 }
 
-.top-nav a:hover, .top-nav a.active {
+.top-nav a:hover,
+.top-nav a.active {
   color: var(--text-main);
 }
 
@@ -272,7 +282,12 @@ h2 {
   background: #ffffff;
   color: var(--text-main);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
-  animation: fadeIn 0.2s ease;
+  animation: toastIn 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.toast-exiting {
+  animation: toastOut 0.3s ease forwards;
 }
 
 .toast-success {
@@ -285,6 +300,20 @@ h2 {
   border-color: rgba(239, 68, 68, 0.25);
   background: rgba(254, 242, 242, 0.95);
   color: #b91c1c;
+}
+
+.toast-icon {
+  font-size: 1.1rem;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.toast-success .toast-icon {
+  color: #10b981;
+}
+
+.toast-error .toast-icon {
+  color: #ef4444;
 }
 
 .toast-close {
@@ -301,7 +330,24 @@ h2 {
   opacity: 1;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes toastOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }

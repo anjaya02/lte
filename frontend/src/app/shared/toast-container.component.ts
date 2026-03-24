@@ -7,14 +7,24 @@ import { ToastService } from '../core/toast.service';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="toast-container">
+    <div class="toast-container" aria-live="polite" aria-atomic="false">
       <div
         *ngFor="let toast of toastService.toasts()"
         class="toast-item"
-        [ngClass]="toast.type === 'error' ? 'toast-error' : 'toast-success'"
+        [class.toast-success]="toast.type === 'success'"
+        [class.toast-error]="toast.type === 'error'"
+        [class.toast-exiting]="toast.exiting"
+        role="alert"
+        (mouseenter)="toastService.pauseTimer(toast.id)"
+        (mouseleave)="toastService.resumeTimer(toast.id)"
       >
+        <span class="toast-icon" aria-hidden="true">{{ toast.type === 'success' ? '✔' : '✘' }}</span>
         <span>{{ toast.text }}</span>
-        <button class="toast-close" (click)="toastService.dismiss(toast.id)">×</button>
+        <button
+          class="toast-close"
+          (click)="toastService.dismiss(toast.id)"
+          aria-label="Dismiss notification"
+        >×</button>
       </div>
     </div>
   `,
