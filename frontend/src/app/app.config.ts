@@ -5,9 +5,5 @@ import { routes } from './app.routes';
 import { msalProviders } from './core/msal.config';
 
 export const appConfig: ApplicationConfig = {
-  providers: [
-    provideRouter(routes),
-    provideHttpClient(withInterceptorsFromDi()),
-    ...msalProviders,
-  ],
+  providers: [provideRouter(routes), provideHttpClient(withInterceptorsFromDi()), ...msalProviders],
 };

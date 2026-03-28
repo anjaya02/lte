@@ -17,15 +17,15 @@ import {
   LogLevel,
 } from '@azure/msal-browser';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { environment } from '../../environments/environment';
+import { AZURE_AD_CONFIG } from './azure-ad.config';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
     auth: {
-      clientId: environment.azure.clientId,
-      authority: `https://login.microsoftonline.com/${environment.azure.tenantId}`,
-      redirectUri: environment.azure.redirectUri,
-      postLogoutRedirectUri: environment.azure.postLogoutRedirectUri,
+      clientId: AZURE_AD_CONFIG.clientId,
+      authority: `https://login.microsoftonline.com/${AZURE_AD_CONFIG.tenantId}`,
+      redirectUri: AZURE_AD_CONFIG.redirectUri,
+      postLogoutRedirectUri: AZURE_AD_CONFIG.postLogoutRedirectUri,
     },
     cache: {
       cacheLocation: BrowserCacheLocation.LocalStorage,
@@ -33,24 +33,16 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     system: {
       loggerOptions: {
         loggerCallback: (level: LogLevel, message: string) => {
-          if (!environment.production) {
-            switch (level) {
-              case LogLevel.Error:
-                console.error(message);
-                break;
-              case LogLevel.Warning:
-                console.warn(message);
-                break;
-              case LogLevel.Info:
-                console.info(message);
-                break;
-              case LogLevel.Verbose:
-                console.debug(message);
-                break;
-            }
+          switch (level) {
+            case LogLevel.Error:
+              console.error(message);
+              break;
+            case LogLevel.Warning:
+              console.warn(message);
+              break;
           }
         },
-        logLevel: environment.production ? LogLevel.Error : LogLevel.Info,
+        logLevel: LogLevel.Warning,
         piiLoggingEnabled: false,
       },
     },
@@ -69,7 +61,6 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
   protectedResourceMap.set('https://graph.microsoft.com/v1.0/*', ['user.read']);
-  // Add backend API scopes here: protectedResourceMap.set('https://api.example.com/*', ['api://scope']);
 
   return {
     interactionType: InteractionType.Redirect,
